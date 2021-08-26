@@ -1,7 +1,7 @@
 package com.spring.mvc.hibernate.controllers;
 
-import com.spring.mvc.hibernate.dao.EmployeeDao;
 import com.spring.mvc.hibernate.entity.Employee;
+import com.spring.mvc.hibernate.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,21 +9,25 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/*
+start with URL "/api/employees"
+ */
+
 @Controller
 @RequestMapping("/api")
 public class MyController {
 
     @Autowired
-    private EmployeeDao employeeDao;
+    private EmployeeService employeeService;
 
     @RequestMapping("/employees")
-    public String showAllEmployees(Model model){
-        List<Employee>allEmployees = employeeDao.getAllEmployess();
+    public String showAllEmployees(Model model) {
+        List<Employee> allEmployees = employeeService.getAllEmployees();
         model.addAttribute("allEmps", allEmployees);
         return "all_Employees";
     }
 
-//    @GetMapping("/employees/{id}")
+    //    @GetMapping("/employees/{id}")
 //    public Employee getEmployee(@PathVariable int id){
 //        Employee employee = employeeDao.getEmployee(id);
 //
@@ -34,17 +38,32 @@ public class MyController {
 //        return employee;
 //    }
 //
-//    @PostMapping("/employees")
-//    public Employee addNewEmp(@RequestBody Employee employee){
-//        employeeDao.saveEmployee(employee);
-//        return employee;
-//    }
-//
-//    @PutMapping("/employees")
-//    public Employee updateEmp(@RequestBody Employee employee){
-//        employeeDao.saveEmployee(employee);
-//        return employee;
-//    }
+    @RequestMapping("/addNewAmp")
+    public String addNewEmp(Model model) {
+
+        Employee employee = new Employee();
+        model.addAttribute("emp", employee);
+
+        return "employee_info";
+    }
+
+    @RequestMapping("/saveEmployee")
+    public String saveEmployee(@ModelAttribute("emp") Employee employee) {
+
+        employeeService.saveEmployee(employee);
+
+        return "redirect:/api/employees";
+    }
+
+    @RequestMapping("/updateInfo")
+    public String updateEmp(@RequestParam("empId") int id, Model model) {
+
+        Employee employee = employeeService.getEmp(id);
+        model.addAttribute("emp", employee);
+
+        return "employee_info";
+
+    }
 //
 //    @DeleteMapping("/employees/{id}")
 //    public String deleteEmp(@PathVariable int id){
